@@ -113,26 +113,22 @@ namespace Lykke.Service.Dash.Api.Services
 
         public async Task BroadcastAsync(Transaction transaction, Guid operationId)
         {
-            TxBroadcast response;
+            TxBroadcast response = null;
 
             try
             {
                 response = await _dashInsightClient.BroadcastTxAsync(transaction.ToHex());
-
-                if (response == null)
-                {
-                    throw new ArgumentException($"{nameof(response)} can not be null");
-                }
-                if (string.IsNullOrEmpty(response.Txid))
-                {
-                    throw new ArgumentException($"{nameof(response)}{nameof(response.Txid)} can not be null or empty. Response={response}");
-                }
             }
             catch (Exception ex)
             {
-                _log.Error(ex, "Failed to brodcast", new { transaction, operationId });
-
-                throw;
+                if (ex.ToString().Contains("transaction already in block chain"))
+                {
+                    _log.Info("Transaction already in block chain", new { transaction, operationId });
+                }
+                else
+                {
+                    throw;
+                }                
             }
 
             var block = await _dashInsightClient.GetLatestBlockHeight();
