@@ -8,13 +8,15 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
 {
     public class BalanceHandler : TimerPeriod
     {
-        private ILog _log;
-        private IPeriodicalService _periodicalService;
+        private readonly ILog _log;
+        private readonly IPeriodicalService _periodicalService;
+        private readonly bool? _disableErrorsSending;
 
-        public BalanceHandler(TimeSpan period, ILog log, IPeriodicalService periodicalService) :
+        public BalanceHandler(TimeSpan period, bool? disableErrorsSending,  ILog log, IPeriodicalService periodicalService) :
             base(nameof(BalanceHandler), (int)period.TotalMilliseconds, log)
         {
-            _log = log;
+            _disableErrorsSending = disableErrorsSending;
+            _log = log.CreateComponentScope(nameof(BalanceHandler));
             _periodicalService = periodicalService;
         }
 
@@ -26,8 +28,14 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(BalanceHandler), nameof(Execute), 
-                    "Failed to update balances", ex);
+                if (_disableErrorsSending == true)
+                {
+                    _log.WriteInfo(nameof(Execute), ex.ToString(), "Failed to update balances");
+                }
+                else
+                {
+                    _log.WriteError(nameof(Execute), "Failed to update balances", ex);
+                }
             }
         }
     }

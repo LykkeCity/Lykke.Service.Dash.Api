@@ -14,6 +14,9 @@ namespace Lykke.Service.Dash.Job.Settings
         public TimeSpan BroadcastCheckerInterval { get; set; }
 
         [Optional]
+        public bool? DisableErrorsSending { get; set; }
+
+        [Optional]
         public ChaosSettings ChaosKitty { get; set; }
     }
 }

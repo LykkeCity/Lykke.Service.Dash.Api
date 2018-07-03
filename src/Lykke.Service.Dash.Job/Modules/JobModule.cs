@@ -80,12 +80,14 @@ namespace Lykke.Service.Dash.Job.Modules
                 .As<IStartable>()
                 .AutoActivate()
                 .WithParameter("period", _settings.CurrentValue.BalanceCheckerInterval)
+                .WithParameter("disableErrorsSending", _settings.CurrentValue.DisableErrorsSending)
                 .SingleInstance();
 
             builder.RegisterType<BroadcastHandler>()
                 .As<IStartable>()
                 .AutoActivate()
                 .WithParameter("period", _settings.CurrentValue.BroadcastCheckerInterval)
+                .WithParameter("disableErrorsSending", _settings.CurrentValue.DisableErrorsSending)
                 .SingleInstance();
         }
     }
