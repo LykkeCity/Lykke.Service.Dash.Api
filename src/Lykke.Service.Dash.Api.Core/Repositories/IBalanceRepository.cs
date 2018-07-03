@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Lykke.Service.Dash.Api.Core.Domain.Balance;
+using Lykke.Service.Dash.Api.Core.Domain;
 
 namespace Lykke.Service.Dash.Api.Core.Repositories
 {

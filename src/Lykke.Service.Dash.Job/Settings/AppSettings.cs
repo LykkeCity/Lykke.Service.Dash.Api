@@ -1,10 +1,9 @@
-﻿using Lykke.Service.Dash.Api.Core.Settings.SlackNotifications;
+﻿using Lykke.Sdk.Settings;
 
 namespace Lykke.Service.Dash.Job.Settings
 {
-    public class AppSettings
+    public class AppSettings : BaseAppSettings
     {
         public DashJobSettings DashJob { get; set; }
-        public SlackNotificationsSettings SlackNotifications { get; set; }
     }
 }

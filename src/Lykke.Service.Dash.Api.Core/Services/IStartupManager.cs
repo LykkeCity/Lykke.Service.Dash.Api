@@ -1,9 +1,9 @@
-﻿using System.Threading.Tasks;
+﻿//using System.Threading.Tasks;
 
-namespace Lykke.Service.Dash.Api.Core.Services
-{
-    public interface IStartupManager
-    {
-        Task StartAsync();
-    }
-}
+//namespace Lykke.Service.Dash.Api.Core.Services
+//{
+//    public interface IStartupManager
+//    {
+//        Task StartAsync();
+//    }
+//}

@@ -2,11 +2,12 @@
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Core.Repositories;
 using Lykke.Service.Dash.Api.Services.Helpers;
-using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+using Lykke.Service.Dash.Api.Core.InsightClient;
 using System.Threading.Tasks;
 using System.Linq;
 using Lykke.Common.Chaos;
 using Common;
+using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Job.Services
 {
@@ -21,7 +22,7 @@ namespace Lykke.Service.Dash.Job.Services
         private readonly IBalancePositiveRepository _balancePositiveRepository;
         private readonly int _minConfirmations;
 
-        public PeriodicalService(ILog log,
+        public PeriodicalService(ILogFactory logFactory,
             IChaosKitty chaosKitty,
             IDashInsightClient dashInsightClient,
             IBroadcastRepository broadcastRepository,
@@ -30,7 +31,7 @@ namespace Lykke.Service.Dash.Job.Services
             IBalancePositiveRepository balancePositiveRepository,
             int minConfirmations)
         {
-            _log = log.CreateComponentScope(nameof(PeriodicalService));
+            _log = logFactory.CreateLog(this);
             _chaosKitty = chaosKitty;
             _dashInsightClient = dashInsightClient;
             _broadcastRepository = broadcastRepository;
@@ -49,9 +50,8 @@ namespace Lykke.Service.Dash.Job.Services
                 var tx = await _dashInsightClient.GetTx(item.Hash);
                 if (tx != null && tx.Confirmations >= _minConfirmations)
                 {
-                    _log.WriteInfo(nameof(UpdateBroadcasts),
-                        new { item.OperationId, amount = tx.GetAmount(), tx.Fees, tx.BlockHeight }, 
-                        $"Brodcast update is detected");
+                    _log.Info("Brodcast update is detected",
+                        new { item.OperationId, amount = tx.GetAmount(), tx.Fees, tx.BlockHeight });
 
                     await _broadcastRepository.SaveAsCompletedAsync(item.OperationId, tx.GetAmount(),
                         tx.Fees, tx.BlockHeight);
@@ -115,15 +115,12 @@ namespace Lykke.Service.Dash.Job.Services
                 var balancePositive = await _balancePositiveRepository.GetAsync(address);
                 if (balancePositive == null)
                 {
-                    _log.WriteInfo(nameof(RefreshAddressBalance), 
-                        new { address, balance, block },
-                        $"Positive balance is detected");
+                    _log.Info("Positive balance is detected", new { address, balance, block });
                 }
                 if (balancePositive != null && balancePositive.Amount != balance)
                 {
-                    _log.WriteInfo(nameof(RefreshAddressBalance),
-                        new { address, balance, oldBalance = balancePositive.Amount, block }, 
-                        $"Change in positive balance is detected");
+                    _log.Info("Change in positive balance is detected",
+                        new { address, balance, oldBalance = balancePositive.Amount, block });
                 }
 
                 await _balancePositiveRepository.SaveAsync(address, balance, block);
@@ -133,8 +130,7 @@ namespace Lykke.Service.Dash.Job.Services
 
             if (balance == 0 && deleteZeroBalance)
             {
-                _log.WriteInfo(nameof(RefreshAddressBalance), new { address }, 
-                    $"Zero balance is detected");
+                _log.Info("Zero balance is detected", new { address });
 
                 await _balancePositiveRepository.DeleteAsync(address);
 

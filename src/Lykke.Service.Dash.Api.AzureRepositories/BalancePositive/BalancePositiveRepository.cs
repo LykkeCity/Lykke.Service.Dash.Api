@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using AzureStorage;
 using AzureStorage.Tables;
-using Common.Log;
-using Lykke.SettingsReader;
-using Lykke.Service.Dash.Api.Core.Domain.Balance;
-using Lykke.Service.Dash.Api.Core.Repositories;
 using Common;
+using Lykke.SettingsReader;
+using Lykke.Service.Dash.Api.Core.Domain;
+using Lykke.Service.Dash.Api.Core.Repositories;
+using Lykke.Common.Log;
 
-namespace Lykke.Service.Dash.Api.AzureRepositories.BalancePositive
+namespace Lykke.Service.Dash.Api.AzureRepositories
 {
     public class BalancePositiveRepository : IBalancePositiveRepository
     {
@@ -16,9 +16,9 @@ namespace Lykke.Service.Dash.Api.AzureRepositories.BalancePositive
         private static string GetPartitionKey(string address) => address.CalculateHexHash32(3);
         private static string GetRowKey(string address) => address;
 
-        public BalancePositiveRepository(IReloadingManager<string> connectionStringManager, ILog log)
+        public BalancePositiveRepository(IReloadingManager<string> connectionStringManager, ILogFactory logFactory)
         {
-            _table = AzureTableStorage<BalancePositiveEntity>.Create(connectionStringManager, "BalancesPositive", log);
+            _table = AzureTableStorage<BalancePositiveEntity>.Create(connectionStringManager, "BalancesPositive", logFactory);
         }
 
         public async Task<IEnumerable<IBalancePositive>> GetAllAsync()

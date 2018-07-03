@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.Dash.Api.Core.Domain.Balance
+﻿namespace Lykke.Service.Dash.Api.Core.Domain
 {
     public interface IBalance
     {

@@ -14,6 +14,7 @@ using Lykke.Service.Dash.Api.Core.Domain;
 using Lykke.Service.Dash.Api.Core.Repositories;
 using Lykke.Service.Dash.Api.Services;
 using Lykke.Service.Dash.Api.Helpers;
+using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Api.Controllers
 {
@@ -24,11 +25,11 @@ namespace Lykke.Service.Dash.Api.Controllers
         private readonly IDashService _dashService;
         private readonly IBuildRepository _buildRepository;
 
-        public TransactionsController(ILog log, 
+        public TransactionsController(ILogFactory logFactory, 
             IDashService dashService,
             IBuildRepository buildRepository)
         {
-            _log = log;
+            _log = logFactory.CreateLog(this);
             _dashService = dashService;
             _buildRepository = buildRepository;
         }
@@ -79,11 +80,10 @@ namespace Lykke.Service.Dash.Api.Controllers
             }
             if (requiredBalance > fromAddressBalance)
             {
-                return BadRequest(BlockchainErrorResponse.FromKnownError(BlockchainErrorCode.NotEnoughtBalance));
+                return BadRequest(BlockchainErrorResponse.FromKnownError(BlockchainErrorCode.NotEnoughBalance));
             }
 
-            await _log.WriteInfoAsync(nameof(TransactionsController), nameof(Build),
-                request.ToJson(), "Build transaction");
+            _log.Info("Build transaction", request);
 
             var transactionContext = await _dashService.BuildTransactionAsync(request.OperationId, fromAddress, 
                 toAddress, amount, request.IncludeFee);
@@ -124,8 +124,7 @@ namespace Lykke.Service.Dash.Api.Controllers
                 return BadRequest(ErrorResponse.Create($"{nameof(request.SignedTransaction)} is not a valid"));
             }
 
-            await _log.WriteInfoAsync(nameof(TransactionsController), nameof(Broadcast),
-                request.ToJson(), "Broadcast transaction");
+            _log.Info("Broadcast transaction", request);
 
             await _dashService.BroadcastAsync(transaction, request.OperationId);
 
@@ -170,9 +169,7 @@ namespace Lykke.Service.Dash.Api.Controllers
                 return NoContent();
             }
 
-            await _log.WriteInfoAsync(nameof(TransactionsController), nameof(DeleteBroadcast),
-                new { operationId = operationId }.ToJson(), 
-                "Delete broadcast");
+            _log.Info("Delete broadcast", new { operationId = operationId });
 
             await _buildRepository.DeleteAsync(operationId);
             await _dashService.DeleteBroadcastAsync(broadcast);

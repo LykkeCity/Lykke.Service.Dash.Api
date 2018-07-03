@@ -1,46 +1,26 @@
 ﻿using Autofac;
 using Common.Log;
-using Lykke.Service.Dash.Api.AzureRepositories.BroadcastInProgress;
+using Lykke.SettingsReader;
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Core.Repositories;
-using Lykke.Service.Dash.Api.Core.Settings.ServiceSettings;
 using Lykke.Service.Dash.Api.Services;
-using Lykke.SettingsReader;
-using Lykke.Service.Dash.Api.AzureRepositories.Balance;
-using Lykke.Service.Dash.Api.AzureRepositories.BalancePositive;
-using Lykke.Service.Dash.Api.AzureRepositories.Broadcast;
-using Lykke.Service.Dash.Api.AzureRepositories.Build;
+using Lykke.Service.Dash.Api.AzureRepositories;
+using Lykke.Service.Dash.Api.Settings;
 
 namespace Lykke.Service.Dash.Api.Modules
 {
     public class ServiceModule : Module
     {
-        private readonly IReloadingManager<DashApiSettings> _settings;
-        private readonly ILog _log;
+        private readonly IReloadingManager<AppSettings> _settings;
 
-        public ServiceModule(IReloadingManager<DashApiSettings> settings, ILog log)
+        public ServiceModule(IReloadingManager<AppSettings> settings)
         {
             _settings = settings;
-            _log = log;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            var connectionStringManager = _settings.ConnectionString(x => x.Db.DataConnString);
-
-            builder.RegisterInstance(_log)
-                .As<ILog>()
-                .SingleInstance();
-
-            builder.RegisterType<HealthService>()
-                .As<IHealthService>()
-                .SingleInstance();
-
-            builder.RegisterType<StartupManager>()
-                .As<IStartupManager>();
-
-            builder.RegisterType<ShutdownManager>()
-                .As<IShutdownManager>();
+            var connectionStringManager = _settings.ConnectionString(x => x.DashApiService.Db.DataConnString);
 
             builder.RegisterType<BroadcastRepository>()
                 .As<IBroadcastRepository>()
@@ -69,14 +49,14 @@ namespace Lykke.Service.Dash.Api.Modules
 
             builder.RegisterType<DashInsightClient>()
                 .As<IDashInsightClient>()
-                .WithParameter("url", _settings.CurrentValue.InsightApiUrl)
+                .WithParameter("url", _settings.CurrentValue.DashApiService.InsightApiUrl)
                 .SingleInstance();
 
             builder.RegisterType<DashService>()
                 .As<IDashService>()
-                .WithParameter("network", _settings.CurrentValue.Network)
-                .WithParameter("fee", _settings.CurrentValue.Fee)
-                .WithParameter("minConfirmations", _settings.CurrentValue.MinConfirmations)
+                .WithParameter("network", _settings.CurrentValue.DashApiService.Network)
+                .WithParameter("fee", _settings.CurrentValue.DashApiService.Fee)
+                .WithParameter("minConfirmations", _settings.CurrentValue.DashApiService.MinConfirmations)
                 .SingleInstance();
         }
     }

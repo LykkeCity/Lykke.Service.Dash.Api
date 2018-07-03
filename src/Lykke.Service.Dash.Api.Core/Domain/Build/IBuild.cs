@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lykke.Service.Dash.Api.Core.Domain.Build
+namespace Lykke.Service.Dash.Api.Core.Domain
 {
     public interface IBuild
     {

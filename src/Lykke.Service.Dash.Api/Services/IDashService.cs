@@ -1,5 +1,5 @@
-﻿using Lykke.Service.Dash.Api.Core.Domain.Broadcast;
-using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+﻿using Lykke.Service.Dash.Api.Core.Domain;
+using Lykke.Service.Dash.Api.Core.InsightClient;
 using NBitcoin;
 using System;
 using System.Threading.Tasks;

@@ -1,6 +1,5 @@
-﻿using Common.Log;
-using Flurl.Http;
-using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+﻿using Flurl.Http;
+using Lykke.Service.Dash.Api.Core.InsightClient;
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Services.Helpers;
 using System;
@@ -12,12 +11,10 @@ namespace Lykke.Service.Dash.Api.Services
 {
     public class DashInsightClient : IDashInsightClient
     {
-        private readonly ILog _log;
         private readonly string _url;
 
-        public DashInsightClient(ILog log, string url)
+        public DashInsightClient(string url)
         {
-            _log = log;
             _url = url;
         }
 
@@ -163,7 +160,7 @@ namespace Lykke.Service.Dash.Api.Services
                 return false;
             }
 
-            return await Retry.Try(() => url.GetJsonAsync<T>(), NeedToRetryException, tryCount, _log, 100);
+            return await Retry.Try(() => url.GetJsonAsync<T>(), NeedToRetryException, tryCount, 100);
         }
     }
 }

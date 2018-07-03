@@ -12,6 +12,7 @@ using Lykke.Service.BlockchainApi.Contract.Balances;
 using Lykke.Service.Dash.Api.Core.Repositories;
 using Lykke.Service.Dash.Api.Helpers;
 using Lykke.Service.Dash.Api.Services;
+using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Api.Controllers
 {
@@ -23,12 +24,12 @@ namespace Lykke.Service.Dash.Api.Controllers
         private readonly IBalanceRepository _balanceRepository;
         private readonly IBalancePositiveRepository _balancePositiveRepository;
 
-        public BalancesController(ILog log, 
+        public BalancesController(ILogFactory logFactory,
             IDashService dashService,
             IBalanceRepository balanceRepository,
             IBalancePositiveRepository balancePositiveRepository)
         {
-            _log = log;
+            _log = logFactory.CreateLog(this);
             _dashService = dashService;
             _balanceRepository = balanceRepository;
             _balancePositiveRepository = balancePositiveRepository;
@@ -66,8 +67,7 @@ namespace Lykke.Service.Dash.Api.Controllers
                 return new StatusCodeResult(StatusCodes.Status409Conflict);
             }
 
-            await _log.WriteInfoAsync(nameof(BalancesController), nameof(AddToObservations),
-                new { address = address }.ToJson(), "Add address to observations");
+            _log.Info("Add address to observations", new { address = address });
 
             await _balanceRepository.AddAsync(address);
 
@@ -89,8 +89,7 @@ namespace Lykke.Service.Dash.Api.Controllers
                 return new StatusCodeResult(StatusCodes.Status204NoContent);
             }
 
-            await _log.WriteInfoAsync(nameof(BalancesController), nameof(DeleteFromObservations),
-                new { address = address }.ToJson(), "Delete address from observations");
+            _log.Info("Delete address from observations", new { address = address });
 
             await _balancePositiveRepository.DeleteAsync(address);
             await _balanceRepository.DeleteAsync(address);

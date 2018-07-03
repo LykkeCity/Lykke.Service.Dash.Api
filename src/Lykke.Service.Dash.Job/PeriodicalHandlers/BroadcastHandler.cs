@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Common;
 using Common.Log;
 using Lykke.Service.Dash.Job.Services;
+using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Job.PeriodicalHandlers
 {
@@ -12,11 +13,11 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
         private readonly IPeriodicalService _periodicalService;
         private readonly bool? _disableErrorsSending;
 
-        public BroadcastHandler(TimeSpan period, bool? disableErrorsSending, ILog log, IPeriodicalService periodicalService) :
-            base(nameof(BroadcastHandler), (int)period.TotalMilliseconds, log)
+        public BroadcastHandler(ILogFactory logFactory, TimeSpan period, bool? disableErrorsSending, IPeriodicalService periodicalService) :
+            base(period, logFactory)
         {
+            _log = logFactory.CreateLog(this);
             _disableErrorsSending = disableErrorsSending;
-            _log = log.CreateComponentScope(nameof(BroadcastHandler));
             _periodicalService = periodicalService;
         }
 
@@ -30,11 +31,11 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
             {
                 if (_disableErrorsSending == true)
                 {
-                    _log.WriteInfo(nameof(Execute), ex.ToString(), "Failed to update broadcasts");
+                    _log.Debug("Failed to update broadcasts", ex.ToString());
                 }
                 else
                 {
-                    _log.WriteError(nameof(Execute), "Failed to update broadcasts", ex);
+                    _log.Error(ex, "Failed to update broadcasts");
                 }
             }
         }

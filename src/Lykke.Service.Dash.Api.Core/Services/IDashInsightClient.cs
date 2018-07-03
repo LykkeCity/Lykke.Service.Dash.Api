@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+using Lykke.Service.Dash.Api.Core.InsightClient;
 
 namespace Lykke.Service.Dash.Api.Core.Services
 {

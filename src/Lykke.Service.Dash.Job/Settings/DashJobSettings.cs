@@ -1,5 +1,5 @@
 ﻿using Lykke.Common.Chaos;
-using Lykke.Service.Dash.Api.Core.Settings.ServiceSettings;
+using Lykke.Service.Dash.Api.Core.Settings;
 using Lykke.SettingsReader.Attributes;
 using System;
 
