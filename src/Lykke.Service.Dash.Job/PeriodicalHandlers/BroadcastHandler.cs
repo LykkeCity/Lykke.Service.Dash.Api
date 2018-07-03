@@ -31,7 +31,7 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
             {
                 if (_disableErrorsSending == true)
                 {
-                    _log.Debug("Failed to update broadcasts", ex.ToString());
+                    _log.Debug("Failed to update broadcasts", exception: ex);
                 }
                 else
                 {

@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.Extensions.DependencyInjection;
 using Lykke.Sdk;
 using Lykke.Service.Dash.Job.Settings;
+using Lykke.Logs.Loggers.LykkeSlack;
 
 namespace Lykke.Service.Dash.Job
 {
@@ -17,6 +18,18 @@ namespace Lykke.Service.Dash.Job
                 {
                     logs.AzureTableName = "DashJobLog";
                     logs.AzureTableConnectionStringResolver = settings => settings.DashJob.Db.LogsConnString;
+
+                    logs.Extended = extendedLogs =>
+                    {
+                        extendedLogs.AddAdditionalSlackChannel("BlockChainIntegration", channelOptions =>
+                        {
+                            channelOptions.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
+                        });
+                        extendedLogs.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", channelOptions =>
+                        {
+                            channelOptions.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
+                        });
+                    };
                 };
 
                 options.Swagger = swagger =>

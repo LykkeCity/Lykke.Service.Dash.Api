@@ -32,7 +32,7 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
             {
                 if (_disableErrorsSending == true)
                 {
-                    _log.Debug("Failed to update balances", ex.ToString());
+                    _log.Debug("Failed to update balances", exception: ex);
                 }
                 else
                 {
