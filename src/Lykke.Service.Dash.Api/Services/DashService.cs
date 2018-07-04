@@ -113,28 +113,22 @@ namespace Lykke.Service.Dash.Api.Services
 
         public async Task BroadcastAsync(Transaction transaction, Guid operationId)
         {
-            TxBroadcast response = null;
+            var hash = transaction.GetHash().ToString();
+            var tx = await _dashInsightClient.GetTx(hash);
 
-            try
+            if (tx == null)
             {
-                response = await _dashInsightClient.BroadcastTxAsync(transaction.ToHex());
+                await _dashInsightClient.BroadcastTxAsync(transaction.ToHex());
             }
-            catch (Exception ex)
+            else
             {
-                if (ex.ToString().Contains("transaction already in block chain"))
-                {
-                    _log.Info("Transaction already in block chain", new { transaction, operationId });
-                }
-                else
-                {
-                    throw;
-                }                
+                _log.Info("Transaction already in block chain", new { transaction, operationId });
             }
 
             var block = await _dashInsightClient.GetLatestBlockHeight();
 
-            await _broadcastRepository.AddAsync(operationId, response.Txid, block);
-            await _broadcastInProgressRepository.AddAsync(operationId, response.Txid);
+            await _broadcastRepository.AddAsync(operationId, hash, block);
+            await _broadcastInProgressRepository.AddAsync(operationId, hash);
         }
 
         public async Task<IBroadcast> GetBroadcastAsync(Guid operationId)
