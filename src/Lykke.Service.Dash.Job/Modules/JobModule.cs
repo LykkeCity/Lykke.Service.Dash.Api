@@ -1,50 +1,30 @@
 ﻿using Autofac;
-using Common.Log;
-using Lykke.Service.Dash.Api.AzureRepositories.BroadcastInProgress;
+using Lykke.Common.Chaos;
+using Lykke.SettingsReader;
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Core.Repositories;
 using Lykke.Service.Dash.Api.Services;
-using Lykke.SettingsReader;
-using Lykke.Service.Dash.Api.AzureRepositories.Balance;
-using Lykke.Service.Dash.Api.AzureRepositories.BalancePositive;
+using Lykke.Service.Dash.Api.AzureRepositories;
 using Lykke.Service.Dash.Job.PeriodicalHandlers;
-using Lykke.Service.Dash.Api.AzureRepositories.Broadcast;
 using Lykke.Service.Dash.Job.Settings;
 using Lykke.Service.Dash.Job.Services;
-using Lykke.Common.Chaos;
 
 namespace Lykke.Service.Dash.Job.Modules
 {
     public class JobModule : Module
     {
-        private readonly IReloadingManager<DashJobSettings> _settings;
-        private readonly ILog _log;
+        private readonly IReloadingManager<AppSettings> _settings;
 
-        public JobModule(IReloadingManager<DashJobSettings> settings, ILog log)
+        public JobModule(IReloadingManager<AppSettings> settings)
         {
             _settings = settings;
-            _log = log;
         }
 
         protected override void Load(ContainerBuilder builder)
         {
-            var connectionStringManager = _settings.ConnectionString(x => x.Db.DataConnString);
+            var connectionStringManager = _settings.ConnectionString(x => x.DashJob.Db.DataConnString);
 
-            builder.RegisterChaosKitty(_settings.CurrentValue.ChaosKitty);
-
-            builder.RegisterInstance(_log)
-                .As<ILog>()
-                .SingleInstance();
-
-            builder.RegisterType<HealthService>()
-                .As<IHealthService>()
-                .SingleInstance();
-
-            builder.RegisterType<StartupManager>()
-                .As<IStartupManager>();
-
-            builder.RegisterType<ShutdownManager>()
-                .As<IShutdownManager>();
+            builder.RegisterChaosKitty(_settings.CurrentValue.DashJob.ChaosKitty);
 
             builder.RegisterType<BroadcastRepository>()
                 .As<IBroadcastRepository>()
@@ -68,24 +48,26 @@ namespace Lykke.Service.Dash.Job.Modules
 
             builder.RegisterType<DashInsightClient>()
                 .As<IDashInsightClient>()
-                .WithParameter("url", _settings.CurrentValue.InsightApiUrl)
+                .WithParameter("url", _settings.CurrentValue.DashJob.InsightApiUrl)
                 .SingleInstance();
 
             builder.RegisterType<PeriodicalService>()
                 .As<IPeriodicalService>()
-                .WithParameter(TypedParameter.From(_settings.CurrentValue.MinConfirmations))
+                .WithParameter(TypedParameter.From(_settings.CurrentValue.DashJob.MinConfirmations))
                 .SingleInstance();            
 
             builder.RegisterType<BalanceHandler>()
                 .As<IStartable>()
                 .AutoActivate()
-                .WithParameter("period", _settings.CurrentValue.BalanceCheckerInterval)
+                .WithParameter("period", _settings.CurrentValue.DashJob.BalanceCheckerInterval)
+                .WithParameter("disableErrorsSending", _settings.CurrentValue.DashJob.DisableErrorsSending)
                 .SingleInstance();
 
             builder.RegisterType<BroadcastHandler>()
                 .As<IStartable>()
                 .AutoActivate()
-                .WithParameter("period", _settings.CurrentValue.BroadcastCheckerInterval)
+                .WithParameter("period", _settings.CurrentValue.DashJob.BroadcastCheckerInterval)
+                .WithParameter("disableErrorsSending", _settings.CurrentValue.DashJob.DisableErrorsSending)
                 .SingleInstance();
         }
     }

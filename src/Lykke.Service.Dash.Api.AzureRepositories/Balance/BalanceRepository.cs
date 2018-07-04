@@ -1,14 +1,14 @@
 ﻿using System.Threading.Tasks;
+using System.Collections.Generic;
 using AzureStorage;
 using AzureStorage.Tables;
-using Common.Log;
-using Lykke.SettingsReader;
-using Lykke.Service.Dash.Api.Core.Domain.Balance;
-using System.Collections.Generic;
-using Lykke.Service.Dash.Api.Core.Repositories;
 using Common;
+using Lykke.SettingsReader;
+using Lykke.Service.Dash.Api.Core.Domain;
+using Lykke.Service.Dash.Api.Core.Repositories;
+using Lykke.Common.Log;
 
-namespace Lykke.Service.Dash.Api.AzureRepositories.Balance
+namespace Lykke.Service.Dash.Api.AzureRepositories
 {
     public class BalanceRepository : IBalanceRepository
     {
@@ -16,9 +16,9 @@ namespace Lykke.Service.Dash.Api.AzureRepositories.Balance
         private static string GetPartitionKey(string address) => address.CalculateHexHash32(3);
         private static string GetRowKey(string address) => address;
 
-        public BalanceRepository(IReloadingManager<string> connectionStringManager, ILog log)
+        public BalanceRepository(IReloadingManager<string> connectionStringManager, ILogFactory logFactory)
         {
-            _table = AzureTableStorage<BalanceEntity>.Create(connectionStringManager, "Balances", log);
+            _table = AzureTableStorage<BalanceEntity>.Create(connectionStringManager, "Balances", logFactory);
         }
 
         public async Task<(IEnumerable<IBalance> Entities, string ContinuationToken)> GetAsync(int take, string continuation)

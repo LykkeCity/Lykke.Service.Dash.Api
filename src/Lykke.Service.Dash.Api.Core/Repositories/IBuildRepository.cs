@@ -1,4 +1,4 @@
-﻿using Lykke.Service.Dash.Api.Core.Domain.Build;
+﻿using Lykke.Service.Dash.Api.Core.Domain;
 using System;
 using System.Threading.Tasks;
 

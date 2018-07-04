@@ -1,4 +1,4 @@
-﻿using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+﻿using Lykke.Service.Dash.Api.Core.InsightClient;
 using System.Collections.Generic;
 using System.Linq;
 

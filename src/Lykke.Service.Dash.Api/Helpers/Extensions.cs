@@ -1,13 +1,10 @@
-﻿using Common;
-using Lykke.Common.Api.Contract.Responses;
+﻿using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.BlockchainApi.Contract;
 using Lykke.Service.BlockchainApi.Contract.Assets;
 using Lykke.Service.BlockchainApi.Contract.Balances;
 using Lykke.Service.BlockchainApi.Contract.Transactions;
 using Lykke.Service.Dash.Api.Core.Domain;
-using Lykke.Service.Dash.Api.Core.Domain.Balance;
-using Lykke.Service.Dash.Api.Core.Domain.Broadcast;
-using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+using Lykke.Service.Dash.Api.Core.InsightClient;
 using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System;
 using System.Collections.Generic;
@@ -15,7 +12,7 @@ using System.Linq;
 
 namespace Lykke.Service.Dash.Api.Helpers
 {
-    public static class Extenstions
+    public static class Extensions
     {
         public static ErrorResponse ToErrorResponse(this ModelStateDictionary modelState)
         {
@@ -131,7 +128,6 @@ namespace Lykke.Service.Dash.Api.Helpers
                 FromAddress = fromAddress,
                 ToAddress = toAddress,
                 Hash = self.Txid,
-                OperationId = Guid.Empty,
                 Timestamp = DateTimeOffset.FromUnixTimeMilliseconds(self.Time).DateTime.ToUniversalTime()
             };
         }

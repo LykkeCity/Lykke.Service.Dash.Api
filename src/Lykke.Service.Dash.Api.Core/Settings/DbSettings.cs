@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.Dash.Api.Core.Settings.ServiceSettings
+﻿namespace Lykke.Service.Dash.Api.Core.Settings
 {
     public class DbSettings
     {

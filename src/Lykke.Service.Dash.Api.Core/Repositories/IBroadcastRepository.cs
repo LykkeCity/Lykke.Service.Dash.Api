@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Lykke.Service.Dash.Api.Core.Domain.Broadcast;
+using Lykke.Service.Dash.Api.Core.Domain;
 
 namespace Lykke.Service.Dash.Api.Core.Repositories
 {

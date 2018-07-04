@@ -1,9 +1,9 @@
 ﻿using Lykke.AzureStorage.Tables;
 using Lykke.AzureStorage.Tables.Entity.Annotation;
 using Lykke.AzureStorage.Tables.Entity.ValueTypesMerging;
-using Lykke.Service.Dash.Api.Core.Domain.Balance;
+using Lykke.Service.Dash.Api.Core.Domain;
 
-namespace Lykke.Service.Dash.Api.AzureRepositories.BalancePositive
+namespace Lykke.Service.Dash.Api.AzureRepositories
 {
     [ValueTypeMergingStrategy(ValueTypeMergingStrategy.UpdateAlways)]
     internal class BalancePositiveEntity : AzureTableEntity, IBalancePositive

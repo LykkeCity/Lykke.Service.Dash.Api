@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.Dash.Api.Core.Domain.InsightClient
+﻿namespace Lykke.Service.Dash.Api.Core.InsightClient
 {
     public class Address
     {

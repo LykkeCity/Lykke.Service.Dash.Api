@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using Common;
 using AzureStorage;
 using AzureStorage.Tables;
-using Common.Log;
 using Lykke.SettingsReader;
 using Lykke.Service.Dash.Api.Core.Repositories;
-using Lykke.Service.Dash.Api.Core.Domain.Broadcast;
-using Common;
+using Lykke.Service.Dash.Api.Core.Domain;
+using Lykke.Common.Log;
 
-namespace Lykke.Service.Dash.Api.AzureRepositories.BroadcastInProgress
+namespace Lykke.Service.Dash.Api.AzureRepositories
 {
     public class BroadcastInProgressRepository : IBroadcastInProgressRepository
     {
@@ -17,9 +17,9 @@ namespace Lykke.Service.Dash.Api.AzureRepositories.BroadcastInProgress
         private static string GetPartitionKey(Guid operationId) => operationId.ToString().CalculateHexHash32(3);
         private static string GetRowKey(Guid operationId) => operationId.ToString();
 
-        public BroadcastInProgressRepository(IReloadingManager<string> connectionStringManager, ILog log)
+        public BroadcastInProgressRepository(IReloadingManager<string> connectionStringManager, ILogFactory logFactory)
         {
-            _table = AzureTableStorage<BroadcastInProgressEntity>.Create(connectionStringManager, "BroadcastsInProgress", log);
+            _table = AzureTableStorage<BroadcastInProgressEntity>.Create(connectionStringManager, "BroadcastsInProgress", logFactory);
         }
 
         public async Task<IEnumerable<IBroadcastInProgress>> GetAllAsync()

@@ -1,4 +1,4 @@
-﻿namespace Lykke.Service.Dash.Api.Core.Domain.Broadcast
+﻿namespace Lykke.Service.Dash.Api.Core.Domain
 {
     public enum BroadcastState
     {

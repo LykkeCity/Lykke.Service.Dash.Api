@@ -2,13 +2,13 @@
 using System.Threading.Tasks;
 using AzureStorage;
 using AzureStorage.Tables;
-using Common.Log;
-using Lykke.SettingsReader;
-using Lykke.Service.Dash.Api.Core.Domain.Broadcast;
-using Lykke.Service.Dash.Api.Core.Repositories;
 using Common;
+using Lykke.SettingsReader;
+using Lykke.Service.Dash.Api.Core.Domain;
+using Lykke.Service.Dash.Api.Core.Repositories;
+using Lykke.Common.Log;
 
-namespace Lykke.Service.Dash.Api.AzureRepositories.Broadcast
+namespace Lykke.Service.Dash.Api.AzureRepositories
 {
     public class BroadcastRepository : IBroadcastRepository
     {
@@ -16,9 +16,9 @@ namespace Lykke.Service.Dash.Api.AzureRepositories.Broadcast
         private static string GetPartitionKey(Guid operationId) => operationId.ToString().CalculateHexHash32(3);
         private static string GetRowKey(Guid operationId) => operationId.ToString();
 
-        public BroadcastRepository(IReloadingManager<string> connectionStringManager, ILog log)
+        public BroadcastRepository(IReloadingManager<string> connectionStringManager, ILogFactory logFactory)
         {
-            _table = AzureTableStorage<BroadcastEntity>.Create(connectionStringManager, "Broadcasts", log);
+            _table = AzureTableStorage<BroadcastEntity>.Create(connectionStringManager, "Broadcasts", logFactory);
         }
 
         public async Task<IBroadcast> GetAsync(Guid operationId)

@@ -1,9 +1,8 @@
 ﻿using Common.Log;
 using Lykke.Service.Dash.Api.Core.Domain;
-using Lykke.Service.Dash.Api.Core.Domain.Broadcast;
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Core.Repositories;
-using Lykke.Service.Dash.Api.Core.Domain.InsightClient;
+using Lykke.Service.Dash.Api.Core.InsightClient;
 using NBitcoin;
 using NBitcoin.Dash;
 using NBitcoin.JsonConverters;
@@ -12,6 +11,7 @@ using System;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
+using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Api.Services
 {
@@ -25,7 +25,7 @@ namespace Lykke.Service.Dash.Api.Services
         private readonly decimal _fee;
         private readonly int _minConfirmations;
 
-        public DashService(ILog log,
+        public DashService(ILogFactory logFactory,
             IDashInsightClient dashInsightClient,
             IBroadcastRepository broadcastRepository,
             IBroadcastInProgressRepository broadcastInProgressRepository,
@@ -37,7 +37,7 @@ namespace Lykke.Service.Dash.Api.Services
         {
             DashNetworks.Register();
 
-            _log = log;
+            _log = logFactory.CreateLog(this);
             _dashInsightClient = dashInsightClient;
             _broadcastRepository = broadcastRepository;
             _broadcastInProgressRepository = broadcastInProgressRepository;
@@ -113,27 +113,22 @@ namespace Lykke.Service.Dash.Api.Services
 
         public async Task BroadcastAsync(Transaction transaction, Guid operationId)
         {
-            TxBroadcast response;
+            TxBroadcast response = null;
 
             try
             {
                 response = await _dashInsightClient.BroadcastTxAsync(transaction.ToHex());
-
-                if (response == null)
-                {
-                    throw new ArgumentException($"{nameof(response)} can not be null");
-                }
-                if (string.IsNullOrEmpty(response.Txid))
-                {
-                    throw new ArgumentException($"{nameof(response)}{nameof(response.Txid)} can not be null or empty. Response={response}");
-                }
             }
             catch (Exception ex)
             {
-                await _log.WriteErrorAsync(nameof(DashService), nameof(BroadcastAsync),
-                    $"transaction: {transaction}, operationId: {operationId}", ex);
-
-                throw;
+                if (ex.ToString().Contains("transaction already in block chain"))
+                {
+                    _log.Info("Transaction already in block chain", new { transaction, operationId });
+                }
+                else
+                {
+                    throw;
+                }                
             }
 
             var block = await _dashInsightClient.GetLatestBlockHeight();

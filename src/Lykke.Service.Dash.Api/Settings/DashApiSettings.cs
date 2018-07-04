@@ -1,4 +1,6 @@
-﻿namespace Lykke.Service.Dash.Api.Core.Settings.ServiceSettings
+﻿using Lykke.Service.Dash.Api.Core.Settings;
+
+namespace Lykke.Service.Dash.Api.Settings
 {
     public class DashApiSettings
     {
