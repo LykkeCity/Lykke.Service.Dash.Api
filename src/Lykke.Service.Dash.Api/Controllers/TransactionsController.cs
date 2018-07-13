@@ -5,8 +5,8 @@ using System;
 using System.Linq;
 using System.Threading.Tasks;
 using System.ComponentModel.DataAnnotations;
-using Common;
 using Common.Log;
+using Lykke.Common.Log;
 using Lykke.Common.Api.Contract.Responses;
 using Lykke.Service.BlockchainApi.Contract.Transactions;
 using Lykke.Service.BlockchainApi.Contract;
@@ -14,7 +14,6 @@ using Lykke.Service.Dash.Api.Core.Domain;
 using Lykke.Service.Dash.Api.Core.Repositories;
 using Lykke.Service.Dash.Api.Services;
 using Lykke.Service.Dash.Api.Helpers;
-using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Api.Controllers
 {

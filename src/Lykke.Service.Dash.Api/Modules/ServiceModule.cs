@@ -1,5 +1,4 @@
 ﻿using Autofac;
-using Common.Log;
 using Lykke.SettingsReader;
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Core.Repositories;

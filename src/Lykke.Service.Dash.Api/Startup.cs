@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Lykke.Sdk;
 using Lykke.Service.Dash.Api.Settings;
 using Lykke.Logs.Loggers.LykkeSlack;
-using Lykke.Logs;
 
 namespace Lykke.Service.Dash.Api
 {
@@ -14,7 +13,6 @@ namespace Lykke.Service.Dash.Api
         {
             return services.BuildServiceProvider<AppSettings>(options =>
             {
-                options.ApiTitle = "Dash.Api";
                 options.Logs = logs =>
                 {
                     logs.AzureTableName = "DashApiLog";
@@ -22,10 +20,7 @@ namespace Lykke.Service.Dash.Api
 
                     logs.Extended = extendedLogs =>
                     {
-                        extendedLogs.AddAdditionalSlackChannel("BlockChainIntegration", channelOptions =>
-                        {
-                            channelOptions.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
-                        });
+                        extendedLogs.AddAdditionalSlackChannel("BlockChainIntegration");
                         extendedLogs.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", channelOptions =>
                         {
                             channelOptions.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
@@ -38,6 +33,8 @@ namespace Lykke.Service.Dash.Api
                     swagger.DescribeAllEnumsAsStrings();
                     swagger.DescribeStringEnumsInCamelCase();
                 };
+
+                options.SwaggerOptions.ApiTitle = "Dash.Api";
             });
         }
 
