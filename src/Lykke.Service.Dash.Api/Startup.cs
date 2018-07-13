@@ -34,7 +34,10 @@ namespace Lykke.Service.Dash.Api
                     swagger.DescribeStringEnumsInCamelCase();
                 };
 
-                options.SwaggerOptions.ApiTitle = "Dash.Api";
+                options.SwaggerOptions = new LykkeSwaggerOptions
+                {
+                    ApiTitle = "Dash.Api"
+                };
             });
         }
 

@@ -34,7 +34,10 @@ namespace Lykke.Service.Dash.Job
                     swagger.DescribeStringEnumsInCamelCase();
                 };
 
-                options.SwaggerOptions.ApiTitle = "Dash.Job";
+                options.SwaggerOptions = new LykkeSwaggerOptions
+                {
+                    ApiTitle = "Dash.Job"
+                };
             });
         }
 
