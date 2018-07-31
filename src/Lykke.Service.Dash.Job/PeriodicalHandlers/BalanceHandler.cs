@@ -4,7 +4,6 @@ using Common;
 using Common.Log;
 using Lykke.Service.Dash.Job.Services;
 using Lykke.Common.Log;
-using System.Threading;
 
 namespace Lykke.Service.Dash.Job.PeriodicalHandlers
 {

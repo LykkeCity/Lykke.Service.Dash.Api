@@ -13,7 +13,6 @@ namespace Lykke.Service.Dash.Job
         {
             return services.BuildServiceProvider<AppSettings>(options =>
             {
-                options.ApiTitle = "Dash.Job";
                 options.Logs = logs =>
                 {
                     logs.AzureTableName = "DashJobLog";
@@ -21,10 +20,7 @@ namespace Lykke.Service.Dash.Job
 
                     logs.Extended = extendedLogs =>
                     {
-                        extendedLogs.AddAdditionalSlackChannel("BlockChainIntegration", channelOptions =>
-                        {
-                            channelOptions.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Information;
-                        });
+                        extendedLogs.AddAdditionalSlackChannel("BlockChainIntegration");
                         extendedLogs.AddAdditionalSlackChannel("BlockChainIntegrationImportantMessages", channelOptions =>
                         {
                             channelOptions.MinLogLevel = Microsoft.Extensions.Logging.LogLevel.Warning;
@@ -36,6 +32,11 @@ namespace Lykke.Service.Dash.Job
                 {
                     swagger.DescribeAllEnumsAsStrings();
                     swagger.DescribeStringEnumsInCamelCase();
+                };
+
+                options.SwaggerOptions = new LykkeSwaggerOptions
+                {
+                    ApiTitle = "Dash.Job"
                 };
             });
         }
