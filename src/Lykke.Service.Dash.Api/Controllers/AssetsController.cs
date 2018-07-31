@@ -25,7 +25,7 @@ namespace Lykke.Service.Dash.Api.Controllers
         {
             if(Asset.Dash.Id != assetId)
             {
-                return NotFound();
+                return NoContent();
             }
 
             return Ok(Asset.Dash.ToAssetResponse());
