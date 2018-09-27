@@ -1,4 +1,5 @@
-﻿using Lykke.Service.BlockchainApi.Contract.Addresses;
+﻿using System;
+using Lykke.Service.BlockchainApi.Contract.Addresses;
 using Lykke.Service.Dash.Api.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.ComponentModel.DataAnnotations;
