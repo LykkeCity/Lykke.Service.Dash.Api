@@ -4,6 +4,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Lykke.Sdk;
 using Lykke.Service.Dash.Api.Settings;
 using Lykke.Logs.Loggers.LykkeSlack;
+using Lykke.Common.ApiLibrary.Middleware;
+using Lykke.Service.BlockchainApi.Contract;
+using Microsoft.AspNetCore.Hosting;
 
 namespace Lykke.Service.Dash.Api
 {
@@ -41,9 +44,27 @@ namespace Lykke.Service.Dash.Api
             });
         }
 
-        public void Configure(IApplicationBuilder app)
+        public void Configure(IApplicationBuilder app, IHostingEnvironment env, IApplicationLifetime appLifetime)
         {
-            app.UseLykkeConfiguration();
+            if (env.IsDevelopment())
+            {
+                app.UseDeveloperExceptionPage();
+            }
+
+            app.UseLykkeMiddleware(ex => BlockchainErrorResponse.FromUnknownError(ex.Message), true);
+
+            app.UseMvc();
+
+            app.UseSwagger(c =>
+            {
+                c.PreSerializeFilters.Add((swagger, httpReq) => swagger.Host = httpReq.Host.Value);
+            });
+            app.UseSwaggerUI(x =>
+            {
+                x.RoutePrefix = "swagger/ui";
+                x.SwaggerEndpoint("/swagger/v1/swagger.json", "v1");
+            });
+
         }
     }
 }
