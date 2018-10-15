@@ -1,8 +1,8 @@
 ﻿using System;
 using System.IO;
 using System.Threading.Tasks;
+using Lykke.Common;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.PlatformAbstractions;
 
 namespace Lykke.Service.Dash.Job
 {
@@ -10,9 +10,9 @@ namespace Lykke.Service.Dash.Job
     {
         public static string EnvInfo => Environment.GetEnvironmentVariable("ENV_INFO");
 
-        public static async Task Main(string[] args)
+        public static async Task Main()
         {
-            Console.WriteLine($"{PlatformServices.Default.Application.ApplicationName} version {PlatformServices.Default.Application.ApplicationVersion}");
+            Console.WriteLine($"{AppEnvironment.Name} version {AppEnvironment.Version}");
 #if DEBUG
             Console.WriteLine("Is DEBUG");
 #else
