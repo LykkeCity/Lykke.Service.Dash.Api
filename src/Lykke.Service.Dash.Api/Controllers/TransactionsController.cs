@@ -62,7 +62,7 @@ namespace Lykke.Service.Dash.Api.Controllers
             var build = await _buildRepository.GetAsync(request.OperationId);
             if (build != null)
             {
-                return Ok(new BuildTransactionResponse()
+                return Conflict(new BuildTransactionResponse()
                 {
                     TransactionContext = build.TransactionContext
                 });
@@ -114,7 +114,9 @@ namespace Lykke.Service.Dash.Api.Controllers
             var broadcast = await _dashService.GetBroadcastAsync(request.OperationId);
             if (broadcast != null)
             {
-                return new StatusCodeResult(StatusCodes.Status409Conflict);
+                ModelState.AddModelError("", $"Broadcast has already happend {request.OperationId}");
+
+                return BadRequest(ModelState.ToErrorResponse());
             }
 
             var transaction = _dashService.GetTransaction(request.SignedTransaction);
@@ -137,7 +139,9 @@ namespace Lykke.Service.Dash.Api.Controllers
             var broadcast = await _dashService.GetBroadcastAsync(operationId);
             if (broadcast == null)
             {
-                return NoContent();
+                ModelState.AddModelError("", $"There is no operation with id {operationId}");
+                
+                return BadRequest(ModelState);
             }
 
             var amount = broadcast.Amount.HasValue ?
