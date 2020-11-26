@@ -141,7 +141,7 @@ namespace Lykke.Service.Dash.Api.Controllers
             {
                 ModelState.AddModelError("", $"There is no operation with id {operationId}");
                 
-                return BadRequest(ModelState);
+                return NoContent();
             }
 
             var amount = broadcast.Amount.HasValue ?
