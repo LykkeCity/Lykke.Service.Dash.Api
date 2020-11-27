@@ -36,14 +36,20 @@ namespace Lykke.Service.Dash.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<PaginationResponse<WalletBalanceContract>> Get([Required, FromQuery] int take, [FromQuery] string continuation)
+        public async Task<IActionResult> Get([Required, FromQuery] string take, [FromQuery] string continuation)
         {
-            var result = await _balancePositiveRepository.GetAsync(take, continuation);
+            if (!int.TryParse(take, out var takeInt))
+            {
+                ModelState.AddModelError(nameof(take), "Should be integer.");
+
+                return BadRequest(ModelState);
+            }
+
+            var result = await _balancePositiveRepository.GetAsync(takeInt, continuation);
             
-            return PaginationResponse.From(
+            return Ok(PaginationResponse.From(
                 result.ContinuationToken, 
-                result.Entities.Select(f => f.ToWalletBalanceContract()).ToArray()
-            );
+                result.Entities.Select(f => f.ToWalletBalanceContract()).ToArray()));
         }
 
         [HttpPost("{address}/observation")]
@@ -86,7 +92,7 @@ namespace Lykke.Service.Dash.Api.Controllers
             var balance = await _balanceRepository.GetAsync(address);
             if (balance == null)
             {
-                return new StatusCodeResult(StatusCodes.Status204NoContent);
+                return new StatusCodeResult(StatusCodes.Status400BadRequest);
             }
 
             _log.Info("Delete address from observations", new { address = address });

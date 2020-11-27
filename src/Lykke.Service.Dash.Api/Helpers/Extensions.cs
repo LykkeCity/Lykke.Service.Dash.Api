@@ -18,6 +18,8 @@ namespace Lykke.Service.Dash.Api.Helpers
         {
             var response = new ErrorResponse();
 
+            response.ModelErrors = new Dictionary<string, List<string>>();
+
             foreach (var state in modelState)
             {
                 var messages = state.Value.Errors

@@ -1,19 +1,33 @@
-﻿using System.Net;
+﻿using System;
+using System.Collections.Generic;
+using System.Net;
+using Lykke.Common.Api.Contract.Responses;
+using Lykke.Service.BlockchainApi.Contract;
 using Microsoft.AspNetCore.Mvc;
 using Swashbuckle.AspNetCore.SwaggerGen;
-using Lykke.Common.Api.Contract.Responses;
 
 namespace Lykke.Service.Dash.Job.Controllers
 {
-    [Route("api/[controller]")]
+    // NOTE: See https://lykkex.atlassian.net/wiki/spaces/LKEWALLET/pages/35755585/Add+your+app+to+Monitoring
+    [Route("api/isalive")]
     public class IsAliveController : Controller
     {
+
+        public IsAliveController()
+        {
+        }
+
+        /// <summary>
+        /// Checks service is alive
+        /// </summary>
+        /// <returns></returns>
         [HttpGet]
-        [SwaggerOperation("IsAlive")]
-        [ProducesResponseType(typeof(IsAliveResponse), (int)HttpStatusCode.OK)]
+        [SwaggerOperation("isalive")]
+        [ProducesResponseType(typeof(BlockchainIsAliveResponse), (int)HttpStatusCode.OK)]
         public IActionResult Get()
         {
-            return Ok(new IsAliveResponse
+            // NOTE: Feel free to extend IsAliveResponse, to display job-specific indicators
+            return Ok(new BlockchainIsAliveResponse
             {
                 Name = Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationName,
                 Version = Microsoft.Extensions.PlatformAbstractions.PlatformServices.Default.Application.ApplicationVersion,
@@ -23,6 +37,8 @@ namespace Lykke.Service.Dash.Job.Controllers
 #else
                 IsDebug = false,
 #endif
+                ContractVersion = new Version("1.2.0"),
+                IssueIndicators = new List<IsAliveResponse.IssueIndicator>()
             });
         }
     }

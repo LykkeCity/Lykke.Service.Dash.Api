@@ -12,11 +12,18 @@ namespace Lykke.Service.Dash.Api.Controllers
     public class AssetsController : Controller
     {
         [HttpGet]
-        public PaginationResponse<AssetResponse> Get([Required, FromQuery] int take, [FromQuery] string continuation)
+        public IActionResult Get([Required, FromQuery] string take, [FromQuery] string continuation)
         {
+            if (!int.TryParse(take, out var takeInt))
+            {
+                ModelState.AddModelError(nameof(take), "Should be integer.");
+
+                return BadRequest(ModelState);
+            }
+
             var assets = new AssetResponse[] { Asset.Dash.ToAssetResponse() };
 
-            return PaginationResponse.From("", assets);
+            return Ok(PaginationResponse.From("", assets));
         }
 
         [HttpGet("{assetId}")]
