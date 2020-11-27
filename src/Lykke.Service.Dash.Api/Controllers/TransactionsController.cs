@@ -114,9 +114,9 @@ namespace Lykke.Service.Dash.Api.Controllers
             var broadcast = await _dashService.GetBroadcastAsync(request.OperationId);
             if (broadcast != null)
             {
-                ModelState.AddModelError("", $"Broadcast has already happend {request.OperationId}");
+                //ModelState.AddModelError("", $"Broadcast has already happend {request.OperationId}");
 
-                return BadRequest(ModelState.ToErrorResponse());
+                return NoContent(); //BadRequest(ModelState.ToErrorResponse());
             }
 
             var transaction = _dashService.GetTransaction(request.SignedTransaction);
@@ -136,12 +136,15 @@ namespace Lykke.Service.Dash.Api.Controllers
         [ProducesResponseType(typeof(BroadcastedSingleTransactionResponse), StatusCodes.Status200OK)]
         public async Task<IActionResult> GetBroadcast([Required] Guid operationId)
         {
+            if (operationId == default)
+                return BadRequest();
+
             var broadcast = await _dashService.GetBroadcastAsync(operationId);
             if (broadcast == null)
             {
                 ModelState.AddModelError("", $"There is no operation with id {operationId}");
                 
-                return NoContent();
+                return Conflict();
             }
 
             var amount = broadcast.Amount.HasValue ?
