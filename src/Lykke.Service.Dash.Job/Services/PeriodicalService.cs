@@ -43,7 +43,8 @@ namespace Lykke.Service.Dash.Job.Services
 
         public async Task UpdateBroadcasts()
         {
-            var list = await _broadcastInProgressRepository.GetAllAsync();
+            var list = (await _broadcastInProgressRepository.GetAllAsync()).ToList();
+            _log.Info($"Broadcast in progress items: {list.Count}");
 
             foreach (var item in list)
             {
@@ -63,6 +64,10 @@ namespace Lykke.Service.Dash.Job.Services
                     _chaosKitty.Meow(item.OperationId);
 
                     await RefreshBalances(tx);
+                }
+                else
+                {
+                    _log.Info("Skip update");
                 }
             }
         }
@@ -107,6 +112,7 @@ namespace Lykke.Service.Dash.Job.Services
         private async Task<decimal> RefreshAddressBalance(string address, bool deleteZeroBalance)
         {
             var balance = await _dashInsightClient.GetBalance(address, _minConfirmations);
+            _log.Info($"{address} balance: {balance}");
 
             if (balance > 0)
             {

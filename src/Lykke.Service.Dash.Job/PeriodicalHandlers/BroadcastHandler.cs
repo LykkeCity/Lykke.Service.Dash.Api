@@ -25,6 +25,7 @@ namespace Lykke.Service.Dash.Job.PeriodicalHandlers
         {
             try
             {
+                _log.Info("Calling UpdateBroadcasts");
                 await _periodicalService.UpdateBroadcasts();
             }
             catch (Exception ex)

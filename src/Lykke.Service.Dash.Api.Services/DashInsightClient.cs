@@ -6,33 +6,39 @@ using System;
 using System.Linq;
 using System.Net;
 using System.Threading.Tasks;
+using Common;
+using Common.Log;
+using Lykke.Common.Log;
 
 namespace Lykke.Service.Dash.Api.Services
 {
     public class DashInsightClient : IDashInsightClient
     {
         private readonly string _url;
+        private readonly ILog _log;
 
-        public DashInsightClient(string url)
+        public DashInsightClient(string url, ILogFactory logFactory)
         {
             _url = url;
+            _log = logFactory.CreateLog(this);
         }
 
         public async Task<decimal> GetBalance(string address, int minConfirmations)
         {
             var utxos = await GetTxsUnspentAsync(address, minConfirmations);
-            
+
             return utxos.Sum(f => f.Amount);
         }
 
         public async Task<long> GetLatestBlockHeight()
         {
-            BlocksInfo blocksInfo; 
+            BlocksInfo blocksInfo;
             var url = $"{_url}/blocks?limit=1";
 
             try
             {
                 blocksInfo = await GetJson<BlocksInfo>(url);
+                _log.Info($"block info: {blocksInfo.ToJson()}");
             }
             catch (FlurlHttpException ex) when (ex.Call.Response.StatusCode == HttpStatusCode.NotFound)
             {
