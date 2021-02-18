@@ -23,14 +23,17 @@ namespace Lykke.Service.Dash.Api.Controllers
         private readonly ILog _log;
         private readonly IDashService _dashService;
         private readonly IBuildRepository _buildRepository;
+        private readonly OperationsToRebuildRegistry _operationsToRebuildRegistry;
 
         public TransactionsController(ILogFactory logFactory, 
             IDashService dashService,
-            IBuildRepository buildRepository)
+            IBuildRepository buildRepository,
+            OperationsToRebuildRegistry operationsToRebuildRegistry)
         {
             _log = logFactory.CreateLog(this);
             _dashService = dashService;
             _buildRepository = buildRepository;
+            _operationsToRebuildRegistry = operationsToRebuildRegistry;
         }
 
         [HttpPost("single")]
@@ -109,6 +112,11 @@ namespace Lykke.Service.Dash.Api.Controllers
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState.ToErrorResponse());
+            }
+
+            if (_operationsToRebuildRegistry.HasToRebuild(request.OperationId))
+            {
+                return BadRequest(BlockchainErrorResponse.FromKnownError(BlockchainErrorCode.BuildingShouldBeRepeated));
             }
 
             var broadcast = await _dashService.GetBroadcastAsync(request.OperationId);

@@ -29,8 +29,6 @@ namespace Lykke.Service.Dash.Api.Services
             IDashInsightClient dashInsightClient,
             IBroadcastRepository broadcastRepository,
             IBroadcastInProgressRepository broadcastInProgressRepository,
-            IBalanceRepository balanceRepository,
-            IBalancePositiveRepository balancePositiveRepository,
             string network,
             decimal fee,
             int minConfirmations)

@@ -1,4 +1,6 @@
-﻿using Autofac;
+﻿using System;
+using System.Collections.Generic;
+using Autofac;
 using Lykke.SettingsReader;
 using Lykke.Service.Dash.Api.Core.Services;
 using Lykke.Service.Dash.Api.Core.Repositories;
@@ -20,6 +22,11 @@ namespace Lykke.Service.Dash.Api.Modules
         protected override void Load(ContainerBuilder builder)
         {
             var connectionStringManager = _settings.ConnectionString(x => x.DashApiService.Db.DataConnString);
+
+            builder.RegisterType<OperationsToRebuildRegistry>()
+                .AsSelf()
+                .WithParameter("operationIdsToRebuild", _settings.CurrentValue.DashApiService.OperationIdsToRebuild ?? new List<Guid>())
+                .SingleInstance();
 
             builder.RegisterType<BroadcastRepository>()
                 .As<IBroadcastRepository>()
