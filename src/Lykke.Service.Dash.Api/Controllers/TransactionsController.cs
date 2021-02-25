@@ -24,7 +24,7 @@ namespace Lykke.Service.Dash.Api.Controllers
         private readonly IDashService _dashService;
         private readonly IBuildRepository _buildRepository;
 
-        public TransactionsController(ILogFactory logFactory, 
+        public TransactionsController(ILogFactory logFactory,
             IDashService dashService,
             IBuildRepository buildRepository)
         {
@@ -84,7 +84,7 @@ namespace Lykke.Service.Dash.Api.Controllers
 
             _log.Info("Build transaction", request);
 
-            var transactionContext = await _dashService.BuildTransactionAsync(request.OperationId, fromAddress, 
+            var transactionContext = await _dashService.BuildTransactionAsync(request.OperationId, fromAddress,
                 toAddress, amount, request.IncludeFee);
 
             await _buildRepository.AddAsync(request.OperationId, transactionContext);
@@ -111,15 +111,21 @@ namespace Lykke.Service.Dash.Api.Controllers
                 return BadRequest(ModelState.ToErrorResponse());
             }
 
+            NBitcoin.Transaction transaction;
             var broadcast = await _dashService.GetBroadcastAsync(request.OperationId);
             if (broadcast != null)
             {
+                transaction = _dashService.GetTransaction(request.SignedTransaction);
+                if (transaction == null)
+                {
+                    return BadRequest(ErrorResponse.Create($"{nameof(request.SignedTransaction)} is not a valid"));
+                }
                 //ModelState.AddModelError("", $"Broadcast has already happend {request.OperationId}");
 
                 return Conflict(); //BadRequest(ModelState.ToErrorResponse());
             }
 
-            var transaction = _dashService.GetTransaction(request.SignedTransaction);
+            transaction = _dashService.GetTransaction(request.SignedTransaction);
             if (transaction == null)
             {
                 return BadRequest(ErrorResponse.Create($"{nameof(request.SignedTransaction)} is not a valid"));
@@ -143,7 +149,7 @@ namespace Lykke.Service.Dash.Api.Controllers
             if (broadcast == null)
             {
                 ModelState.AddModelError("", $"There is no operation with id {operationId}");
-                
+
                 return NoContent();
             }
 
@@ -212,7 +218,7 @@ namespace Lykke.Service.Dash.Api.Controllers
         [HttpGet("history/from/{address}")]
         [ProducesResponseType(StatusCodes.Status200OK, Type = typeof(HistoricalTransactionContract[]))]
         public async Task<IActionResult> GetHistoryFromAddress([Required] string address,
-            [Required, FromQuery] int take, 
+            [Required, FromQuery] int take,
             [FromQuery] string afterHash)
         {
             var dashAddress = _dashService.GetBitcoinAddress(address);
