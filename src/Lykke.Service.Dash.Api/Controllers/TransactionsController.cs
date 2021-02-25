@@ -116,7 +116,7 @@ namespace Lykke.Service.Dash.Api.Controllers
             {
                 //ModelState.AddModelError("", $"Broadcast has already happend {request.OperationId}");
 
-                return NoContent(); //BadRequest(ModelState.ToErrorResponse());
+                return Conflict(); //BadRequest(ModelState.ToErrorResponse());
             }
 
             var transaction = _dashService.GetTransaction(request.SignedTransaction);
@@ -144,7 +144,7 @@ namespace Lykke.Service.Dash.Api.Controllers
             {
                 ModelState.AddModelError("", $"There is no operation with id {operationId}");
                 
-                return Conflict();
+                return NoContent();
             }
 
             var amount = broadcast.Amount.HasValue ?
